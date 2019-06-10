@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SportsFieldActivity"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:src="@drawable/field"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2004年6月18日～19日，由11位相关建筑学家、结构专家、国际羽联、北京奥组委、北京市政府部门的专家组成的专家组进行建筑设计方案评审会。于2005年6月30日开工。总建筑面积36332.4平方米该体育馆的建设内容有：比赛及热身场的赛事区、观众区、赛事管理区、场馆运营区、贵宾及官员区、赞助商区、运动员及随队官员区、新闻媒体区和安全保卫区等。
+为满足学校设区服务的使用功能要求，体育馆功能分区做了四大部分的改造：一是利用大量削减的新闻媒体用房改造成大学生文体活动中心用房；二是利用比赛馆主场地，结合热身馆与部分运动员用房，并改造赛事管理用房，形成健身中心，可提供学校体育教学使用，及作为国家羽毛球队训练基地，也可作为商业性的比赛设施；三是利用大量缩减的赛事管理用房，尤其是高级办公用房，改造成会议中心；四是把赛时贵宾用房和赞助商用房兼做高级俱乐部，既利于这些用房的维护，又充分利用了场馆的资源。
+2007年10月10日至14日：承办2007“好运北京”国际羽毛球邀请赛。\n
+2007年10月14日：北工大体育场馆工作人员就将进行奥运实战模拟——在最快时间内撤出场地内的胶垫，转变为艺术体操比赛场馆。\n
+2007年12月5日至月7日：承办2007“好运北京”艺术体操国际邀请赛。\n"
+            />
+    </ScrollView>
+
+
+</LinearLayout>

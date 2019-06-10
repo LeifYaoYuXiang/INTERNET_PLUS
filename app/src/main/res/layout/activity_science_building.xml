@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScienceBuildingActivity"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/science_building"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="建筑面积:30319，总高度56.7m,建筑占地东西长82.8m,南北长72m。而地上13层地下1层。为了适应现代化高等教育的发展,改进学校现有的硬件环境,在全国范围内开展了建筑设计投标竞赛,最后北京工业大学建筑系的方案中标,
+实施方案由北京工业大学建筑勘察设计院和北京市建筑设计研究院四所共同完成。 \n
+        功能分区: 综合科学楼由激光技术中心,分析测试中心,电子与控制工程中心等八部分组成。根据对使用功能和建筑结构的分析,将中间无柱大空间的激光加工技术大厅及其配套用房作为独立部分,
+以裙房形式放在主楼北面,其它无特殊结构要求的各类实验用房、科研用房、教室、行政办公用房等均纳入主楼内。主入口放在二层,通过室外台阶进入大厅。与科学楼的北侧相连的是其配楼，激光院的实验室分布于此。
+       \n科学口的楼顶外形酷似一定神采奕奕的博士帽，充分展现出学校重视学术的良好氛围，也寓意着北工大学子美好的未来。"/>
+
+</LinearLayout>

@@ -45,8 +45,16 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private GroupBuildings[] groupBuildings={new GroupBuildings("北工大运动场馆", R.drawable.field),
-                                                new GroupBuildings("第三教学楼",R.drawable.tb3)};
+    private GroupBuildings[] groupBuildings={
+            new GroupBuildings("北工大运动场馆", R.drawable.field),
+            new GroupBuildings("第三教学楼",R.drawable.tb3),
+            new GroupBuildings("北工大第四教学楼",R.drawable.bdic),
+            new GroupBuildings("北工大旧图",R.drawable.bjut_library),
+            new GroupBuildings("工大建国饭店",R.drawable.gongdajianguo),
+            new GroupBuildings("北工大礼堂",R.drawable.hall),
+            new GroupBuildings("北工大科学楼",R.drawable.science_building),
+            new GroupBuildings("北工大交通楼",R.drawable.transport_building)
+                                                };
 
 
     private List<GroupBuildings> groupBuildingsList=new ArrayList<>();
@@ -71,7 +79,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClickListener(View view) {
                 int position=mainRecylcle.getChildAdapterPosition(view);
-                Toast.makeText(MainActivity.this, "测试成功！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "测试成功！"+position, Toast.LENGTH_SHORT).show();
+                if(position==0){
+                    Intent intent=new Intent(MainActivity.this,SportsFieldActivity.class);
+                    startActivity(intent);
+                }
+                if(position==6){
+                    Intent intent=new Intent(MainActivity.this,ScienceBuildingActivity.class);
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -126,11 +142,14 @@ public class MainActivity extends AppCompatActivity
 
     private void initGroupsBuildings() {
         groupBuildingsList.clear();
-        for(int i=0;i<50;i++){
-            Random random=new Random();
-            int index=random.nextInt(groupBuildings.length);
-            groupBuildingsList.add(groupBuildings[index]);
+        for(int i=0;i<groupBuildings.length;i++){
+            groupBuildingsList.add(groupBuildings[i]);
         }
+//        for(int i=0;i<50;i++){
+//            Random random=new Random();
+//            int index=random.nextInt(groupBuildings.length);
+//            groupBuildingsList.add(groupBuildings[index]);
+//        }
 
     }
 
@@ -196,15 +215,18 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode){
             case TAKE_PHOTO:
                 if(resultCode==RESULT_OK){
-                    Intent intent=new Intent(MainActivity.this,feedbackActivity.class);
-                    Bundle bundle=new Bundle();
-
-//                    HttpClientHelper.sendWithOKHttp(imageUri);
-//
-                   bundle.putString("imageUri",imageUri.toString());
-                   Log.i("image",imageUri.toString());
-                    intent.putExtras(bundle);
+                    Intent intent=new Intent(MainActivity.this,SportsFieldActivity.class);
                     startActivity(intent);
+
+//                    Intent intent=new Intent(MainActivity.this,feedbackActivity.class);
+//                    Bundle bundle=new Bundle();
+//
+////                    HttpClientHelper.sendWithOKHttp(imageUri);
+////
+//                   bundle.putString("imageUri",imageUri.toString());
+//                   Log.i("image",imageUri.toString());
+//                    intent.putExtras(bundle);
+//                    startActivity(intent);
                 }
                 break;
             default:

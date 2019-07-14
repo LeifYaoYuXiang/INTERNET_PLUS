@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
         Log.i("TAG","information of file: "+file.getName()+" "+file.length());
         MultipartBody multipartBody = builder.build();
         final Request request = new Request.Builder()
-                .url("http://172.21.12.229:8500/uploadimage")
+                .url("http://222.128.45.37:8500/uploadimage")
                 //请求地址
                 .post(multipartBody)
                 .addHeader("Connection","close")
@@ -246,8 +246,6 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         Call call = client.newCall(request);
-        //OKHttpCallbackImage okHttpCallbackImage=new OKHttpCallbackImage();
-
         Callback imageCallback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -269,15 +267,6 @@ public class MainActivity extends AppCompatActivity
                         startActivity(intent);
                     }
                 });
-
-////                   Bundle bundle=new Bundle();
-////
-////                   bundle.putString("imageUri",imageUri.toString());
-////
-////                   Log.i("image",imageUri.toString());
-////                   intent.putExtras(bundle);
-////                   startActivity(intent);
-
             }
         };
         call.enqueue(imageCallback);
@@ -294,14 +283,13 @@ public class MainActivity extends AppCompatActivity
         builder.addFormDataPart("id",id+"");
         MultipartBody multipartBody = builder.build();
         final Request request = new Request.Builder()
-                .url("http://172.21.12.229:8500/loadarea")
+                .url("http://222.128.45.37:8500/loadarea")
                 //请求地址
                 .post(multipartBody)
                 .addHeader("Connection","close")
                 //添加请求体参数
                 .build();
         Call call = client.newCall(request);
-        //OKHttpCallbackID okHttpCallback=new OKHttpCallbackID(uri);
         Callback areaCallback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

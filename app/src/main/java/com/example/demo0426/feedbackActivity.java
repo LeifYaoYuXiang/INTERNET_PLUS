@@ -24,6 +24,8 @@ public class feedbackActivity extends AppCompatActivity {
         Bundle bundle=intent.getExtras();
 
         String imageUri=bundle.getString("imageUri");
+        String possibility=bundle.getString("Possibility");
+        String area=bundle.getString("AreaInformation");
 
         try {
             Bitmap bitmap= BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.parse(imageUri)));
@@ -35,6 +37,8 @@ public class feedbackActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        TextView textView=findViewById(R.id.areaPossibility);
+        textView.setText("有"+possibility+"%的概率在"+area);
 
 
     }

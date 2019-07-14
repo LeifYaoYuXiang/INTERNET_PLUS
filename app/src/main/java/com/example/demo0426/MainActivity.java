@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity
 
     public static String idInformation;
     public static String imageInformation;
+
+    public static String finalAreaInformation;
+    public static String finalPossibility;
 
     private GroupBuildings[] groupBuildings={
             new GroupBuildings("北工大运动场馆", R.drawable.field),
@@ -259,7 +263,7 @@ public class MainActivity extends AppCompatActivity
         Log.i("TAG","information of file: "+file.getName()+" "+file.length());
         MultipartBody multipartBody = builder.build();
         final Request request = new Request.Builder()
-                .url("http://222.128.45.37:8500/uploadimage")
+                .url("http://172.21.12.229:8500/uploadimage")
                 //请求地址
                 .post(multipartBody)
                 .addHeader("Connection","close")
@@ -267,7 +271,7 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         Call call = client.newCall(request);
-        Callback imageCallback=new Callback() {
+        final Callback imageCallback=new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -289,14 +293,33 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                imageInformation=response.body().toString();
+                imageInformation=response.body().string();
                 Log.e("Success-Image","上传成功"+imageInformation);
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Scanner sc=new Scanner(imageInformation);
+                        sc.useDelimiter("\\s*%\\s*");
+
+                        if(sc.hasNext()){
+                            finalPossibility=sc.next();
+                        }
+                        if(sc.hasNext()){
+                            finalAreaInformation=sc.next();
+                        }
+
                         Intent intent=new Intent(MainActivity.this,feedbackActivity.class);
                         Bundle bundle=new Bundle();
                         bundle.putString("imageUri",imageUri.toString());
+
+
+
+                        Log.e("POSS",finalPossibility);
+                        Log.e("AREA",finalAreaInformation);
+
+                        bundle.putString("Possibility",finalPossibility);
+                        bundle.putString("AreaInformation",finalAreaInformation);
+
                         intent.putExtras(bundle);
                         startActivity(intent);
                     }
@@ -318,7 +341,7 @@ public class MainActivity extends AppCompatActivity
         builder.addFormDataPart("id",id+"");
         MultipartBody multipartBody = builder.build();
         final Request request = new Request.Builder()
-                .url("http://222.128.45.37:8500/loadarea")
+                .url("http://172.21.12.229:8500/loadarea")
                 //请求地址
                 .post(multipartBody)
                 .addHeader("Connection","close")
@@ -343,7 +366,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                idInformation=response.body().toString();
+                idInformation=response.body().string();
                 Log.e("TAG-Success-Area","上传成功"+idInformation);
                 sendWithOKHttpImage(uri);
             }

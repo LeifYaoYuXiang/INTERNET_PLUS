@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ScienceBuildingActivity"></activity>
+        <activity android:name=".ErrorActivity"></activity>
+        <activity android:name=".ScienceBuildingActivity" />
         <activity android:name=".SportsFieldActivity" />
         <activity android:name=".feedbackActivity" />
         <activity

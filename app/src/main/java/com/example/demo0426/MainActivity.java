@@ -1,9 +1,11 @@
 package com.example.demo0426;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
@@ -22,8 +24,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 
 import java.io.File;
@@ -107,23 +107,27 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
-                try {
-                    if (outputImage.exists()) {
-                        outputImage.delete();
-                    }
-                    outputImage.createNewFile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (Build.VERSION.SDK_INT >= 24) {
-                    imageUri = FileProvider.getUriForFile(MainActivity.this, "com.example.scenedetection.fileprovider", outputImage);
-                } else {
-                    imageUri = Uri.fromFile(outputImage);
-                }
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                imageUri = getImageUri();
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent,TAKE_PHOTO);
+//                File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+//                try {
+//                    if (outputImage.exists()) {
+//                        outputImage.delete();
+//                    }
+//                    outputImage.createNewFile();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                if (Build.VERSION.SDK_INT >= 24) {
+//                    imageUri = FileProvider.getUriForFile(MainActivity.this, "com.example.scenedetection.fileprovider", outputImage);
+//                } else {
+//                    imageUri = Uri.fromFile(outputImage);
+//                }
+//                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//                startActivityForResult(intent,TAKE_PHOTO);
             }
         });
 
@@ -142,6 +146,23 @@ public class MainActivity extends AppCompatActivity
         for(int i=0;i<groupBuildings.length;i++){
             groupBuildingsList.add(groupBuildings[i]);
         }
+    }
+
+    private Uri getImageUri() {
+        File file = new File(Environment.getExternalStorageDirectory(), "/temp/" + System.currentTimeMillis() + ".jpg");
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        String path = file.getPath();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            imageUri = Uri.fromFile(file);
+        } else {
+            //兼容android7.0 使用共享文件的形式
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, path);
+            imageUri = this.getApplication().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        }
+        return imageUri;
     }
 
     @Override
@@ -250,7 +271,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                final IOException error=e;
                 Log.e("Failure-Image","上传失败"+e.getLocalizedMessage());
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent=new Intent(MainActivity.this,ErrorActivity.class);
+                        Bundle bundle=new Bundle();
+                        bundle.putInt("ErrorCode",002);
+                        bundle.putString("ErrorType","图像传输错误");
+                        bundle.putString("ErrorMessage",error.getLocalizedMessage());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
@@ -272,6 +306,7 @@ public class MainActivity extends AppCompatActivity
         call.enqueue(imageCallback);
 
     }
+
 
     public void sendWithOKHttpArea(int id, final Uri uri){
         OkHttpClient client=new OkHttpClient.Builder()
@@ -295,6 +330,15 @@ public class MainActivity extends AppCompatActivity
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
                 Log.e("TAG-Failure-Area","上传失败"+e.getLocalizedMessage());
+                final IOException error=e;
+                Intent intent=new Intent(MainActivity.this,ErrorActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putInt("ErrorCode",001);
+                bundle.putString("ErrorType","地理信息传输错误");
+                bundle.putString("ErrorMessage",error.getLocalizedMessage());
+                intent.putExtras(bundle);
+                startActivity(intent);
+
             }
 
             @Override

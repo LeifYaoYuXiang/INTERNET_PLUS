@@ -35,11 +35,7 @@ public class feedbackActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String[] feedback=HttpClientHelper.sendWithOKHttpArea(2,Uri.parse(imageUri));
-        String id=feedback[0];
-        String image=feedback[1];
 
-        Log.i("TAG","In the feedback I have received id:"+id+" and image:"+image);
 
     }
 }

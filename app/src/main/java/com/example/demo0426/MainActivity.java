@@ -1,19 +1,14 @@
 package com.example.demo0426;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,19 +19,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import java.io.ByteArrayOutputStream;
-import java.io.Console;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -44,6 +43,9 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static String idInformation;
+    public static String imageInformation;
 
     private GroupBuildings[] groupBuildings={
             new GroupBuildings("北工大运动场馆", R.drawable.field),
@@ -122,11 +124,6 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent,TAKE_PHOTO);
-
-
-
-
-                //sendRequest();
             }
         });
 
@@ -145,12 +142,6 @@ public class MainActivity extends AppCompatActivity
         for(int i=0;i<groupBuildings.length;i++){
             groupBuildingsList.add(groupBuildings[i]);
         }
-//        for(int i=0;i<50;i++){
-//            Random random=new Random();
-//            int index=random.nextInt(groupBuildings.length);
-//            groupBuildingsList.add(groupBuildings[index]);
-//        }
-
     }
 
     @Override
@@ -215,23 +206,117 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode){
             case TAKE_PHOTO:
                 if(resultCode==RESULT_OK){
-                    Intent intent=new Intent(MainActivity.this,SportsFieldActivity.class);
-                    startActivity(intent);
-
-//                    Intent intent=new Intent(MainActivity.this,feedbackActivity.class);
-//                    Bundle bundle=new Bundle();
-//
-////                    HttpClientHelper.sendWithOKHttp(imageUri);
-////
-//                   bundle.putString("imageUri",imageUri.toString());
-//                   Log.i("image",imageUri.toString());
-//                    intent.putExtras(bundle);
-//                    startActivity(intent);
+                    //sendWithOKHttpArea(2,Uri.parse(imageUri.toString()));
+                    sendWithOKHttpArea(2,Uri.parse(imageUri.toString()));
                 }
                 break;
             default:
                 break;
         }
+    }
+
+    public void sendWithOKHttpImage(Uri uri){
+        OkHttpClient client=new OkHttpClient.Builder()
+                .retryOnConnectionFailure(true)
+                .connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout( 60 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(60 * 1000, TimeUnit.MILLISECONDS).build();
+
+
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.ALTERNATIVE);
+        File file = null;
+        try {
+            file = new File(new URI(uri.toString()));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        if (file != null) {
+            Log.i("TAG","File Not Null");
+            RequestBody fileBody=RequestBody.create(MediaType.parse("image/jpg"), file);
+            builder.addFormDataPart("CameraImages", file.getName(), fileBody);
+        }
+        Log.i("TAG","information of file: "+file.getName()+" "+file.length());
+        MultipartBody multipartBody = builder.build();
+        final Request request = new Request.Builder()
+                .url("http://172.21.12.229:8500/uploadimage")
+                //请求地址
+                .post(multipartBody)
+                .addHeader("Connection","close")
+                //添加请求体参数
+                .build();
+
+        Call call = client.newCall(request);
+        //OKHttpCallbackImage okHttpCallbackImage=new OKHttpCallbackImage();
+
+        Callback imageCallback=new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                Log.e("Failure-Image","上传失败"+e.getLocalizedMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                imageInformation=response.body().toString();
+                Log.e("Success-Image","上传成功"+imageInformation);
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent=new Intent(MainActivity.this,feedbackActivity.class);
+                        Bundle bundle=new Bundle();
+                        bundle.putString("imageUri",imageUri.toString());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                });
+
+////                   Bundle bundle=new Bundle();
+////
+////                   bundle.putString("imageUri",imageUri.toString());
+////
+////                   Log.i("image",imageUri.toString());
+////                   intent.putExtras(bundle);
+////                   startActivity(intent);
+
+            }
+        };
+        call.enqueue(imageCallback);
+
+    }
+
+    public void sendWithOKHttpArea(int id, final Uri uri){
+        OkHttpClient client=new OkHttpClient.Builder()
+                .retryOnConnectionFailure(true)
+                .connectTimeout(60 * 1000, TimeUnit.MILLISECONDS)
+                .readTimeout( 60 * 1000, TimeUnit.MILLISECONDS)
+                .writeTimeout(60 * 1000, TimeUnit.MILLISECONDS).build();
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.ALTERNATIVE);
+        builder.addFormDataPart("id",id+"");
+        MultipartBody multipartBody = builder.build();
+        final Request request = new Request.Builder()
+                .url("http://172.21.12.229:8500/loadarea")
+                //请求地址
+                .post(multipartBody)
+                .addHeader("Connection","close")
+                //添加请求体参数
+                .build();
+        Call call = client.newCall(request);
+        //OKHttpCallbackID okHttpCallback=new OKHttpCallbackID(uri);
+        Callback areaCallback=new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                Log.e("TAG-Failure-Area","上传失败"+e.getLocalizedMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                idInformation=response.body().toString();
+                Log.e("TAG-Success-Area","上传成功"+idInformation);
+                sendWithOKHttpImage(uri);
+            }
+        };
+        call.enqueue(areaCallback);
     }
 
 
